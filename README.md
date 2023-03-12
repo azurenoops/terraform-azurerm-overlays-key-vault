@@ -1,8 +1,8 @@
 # Azure Key Vault Overlay Terraform Module
 
-[![Changelog](https://img.shields.io/badge/changelog-release-green.svg)](CHANGELOG.md) [![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) [![TF Registry](https://img.shields.io/badge/terraform-registry-blue.svg)](https://registry.terraform.io/modules/azurenoops/overlays-front-door/azurerm/)
+[![Changelog](https://img.shields.io/badge/changelog-release-green.svg)](CHANGELOG.md) [![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) [![TF Registry](https://img.shields.io/badge/terraform-registry-blue.svg)](https://registry.terraform.io/modules/azurenoops/overlays-key-vault/azurerm/)
 
-This Terraform Module creates a Key Vault also adds required access policies for azure AD users, groups and azure AD service principals. This also enables private endpoint and sends all logs to log analytic workspace or storage.
+This Terraform Module creates a Key Vault also adds required access policies for azure AD users, groups and azure AD service principals. This also enables private endpoint and sends all logs to log analytic workspace or storage. This module can be used with an [SCCA compliant Network](https://registry.terraform.io/modules/azurenoops/overlays-hubspoke/azurerm/latest).
 
 ## SCCA Compliance
 
@@ -23,7 +23,7 @@ More details are available in the [CONTRIBUTING.md](./CONTRIBUTING.md#pull-reque
 * [Certifiate Contacts](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault#contact)
 * [Private Endpoints](https://www.terraform.io/docs/providers/azurerm/r/private_endpoint.html)
 * [Private DNS zone for `privatelink` A records](https://www.terraform.io/docs/providers/azurerm/r/private_dns_zone.html)
-* [Azure Log Dignostics](https://www.terraform.io/docs/providers/azurerm/r/network_security_group.html)
+* [Azure Reource Locks](https://www.terraform.io/docs/providers/azurerm/r/management_lock.html)
 
 ## Overlay Module Usage
 
