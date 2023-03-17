@@ -33,7 +33,5 @@ module "mod_key_vault_rg" {
   custom_rg_name          = var.custom_resource_group_name != null ? var.custom_resource_group_name : null
 
   // Tags
-  add_tags = merge(var.add_tags, {
-    DeployedBy = format("AzureNoOpsTF [%s]", terraform.workspace)
-  }) # Tags to be applied to all resources
+  add_tags = merge(local.default_tags, var.add_tags) # Tags to be applied to all resources
 }
