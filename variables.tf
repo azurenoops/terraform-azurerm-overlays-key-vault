@@ -44,8 +44,8 @@ variable "create_key_vault_resource_group" {
   default     = true
 }
 
-variable "custom_resource_group_name" {
-  description = "The name of the custom resource group to create. If not set, the name will be generated using the `org_name`, `workload_name`, `deploy_environment` and `environment` variables."
+variable "existing_resource_group_name" {
+  description = "The name of the existing resource group to use. If not set, the name will be generated using the `org_name`, `workload_name`, `deploy_environment` and `environment` variables."
   type        = string
   default     = null
 }

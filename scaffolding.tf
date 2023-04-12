@@ -16,7 +16,7 @@ module "mod_azure_region_lookup" {
 #----------------------------------------------------------
 data "azurerm_resource_group" "rgrp" {
   count = var.create_key_vault_resource_group == false ? 1 : 0
-  name  = var.custom_resource_group_name
+  name  = var.existing_resource_group_name
 }
 
 module "mod_key_vault_rg" {
