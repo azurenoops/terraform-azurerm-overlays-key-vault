@@ -6,7 +6,7 @@ on:
 
 jobs:
   full-e2e-check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, 1ES.Pool=terraform-azurerm-overlays-key-vault]
     environment:
       name: crontests
     steps:
