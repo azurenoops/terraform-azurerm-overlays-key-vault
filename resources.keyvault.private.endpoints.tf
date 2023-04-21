@@ -24,13 +24,13 @@ resource "azurerm_private_endpoint" "pep" {
   name                = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0))
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = var.existing_subnet_id
+  subnet_id           = var.existing_subnet_id == null ? azurerm_subnet.snet_ep.0.id : var.existing_subnet_id
   tags                = merge({ "Name" = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0)) }, var.add_tags, )
 
   private_service_connection {
     name                           = "keyvault-privatelink"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_key_vault.keyvault.id
+    private_connection_resource_id = azurerm_key_vault.keyvault.0.id
     subresource_names              = ["vault"]
   }
 }
@@ -64,7 +64,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 
 resource "azurerm_private_dns_a_record" "a_rec" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_key_vault.keyvault.name
+  name                = azurerm_key_vault.keyvault.0.name
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
