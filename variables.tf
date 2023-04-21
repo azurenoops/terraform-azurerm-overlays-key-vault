@@ -41,7 +41,7 @@ variable "deploy_environment" {
 variable "create_key_vault_resource_group" {
   description = "Controls if the resource group should be created. If set to false, the resource group name must be provided. Default is true."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "existing_resource_group_name" {
@@ -124,6 +124,11 @@ variable "enabled_for_template_deployment" {
   default     = false
 }
 
+variable "enable_purge_protection" {
+  description = "Is Purge Protection enabled for this Key Vault?"
+  default     = false
+}
+
 variable "admin_objects_ids" {
   description = "IDs of the objects that can do all operations on all keys, secrets and certificates."
   type        = list(string)
@@ -153,12 +158,6 @@ variable "network_acls" {
   default = {}
 }
 
-variable "purge_protection_enabled" {
-  description = "Whether to activate purge protection."
-  type        = bool
-  default     = true
-}
-
 variable "soft_delete_retention_days" {
   description = "The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days."
   type        = number
@@ -169,4 +168,14 @@ variable "rbac_authorization_enabled" {
   type        = bool
   description = "Whether the Key Vault uses Role Based Access Control (RBAC) for authorization of data actions instead of access policies."
   default     = false
+}
+
+variable "certificate_contacts" {
+  description = "Contact information to send notifications triggered by certificate lifetime events"
+  type = list(object({
+    email = string
+    name  = optional(string)
+    phone = optional(string)
+  }))
+  default = []
 }

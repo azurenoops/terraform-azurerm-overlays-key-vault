@@ -20,7 +20,7 @@ resource "azurerm_key_vault" "keyvault" {
   enabled_for_disk_encryption     = var.enabled_for_disk_encryption
   enabled_for_template_deployment = var.enabled_for_template_deployment
 
-  purge_protection_enabled   = var.purge_protection_enabled
+  purge_protection_enabled   = var.enable_purge_protection
   soft_delete_retention_days = var.soft_delete_retention_days
 
   enable_rbac_authorization = var.rbac_authorization_enabled
@@ -37,6 +37,21 @@ resource "azurerm_key_vault" "keyvault" {
       ip_rules                   = acl.value.ip_rules
       virtual_network_subnet_ids = acl.value.virtual_network_subnet_ids
     }
+  }
+
+  dynamic "contact" {
+    for_each = var.certificate_contacts
+    content {
+      email = contact.value.email
+      name  = contact.value.name
+      phone = contact.value.phone
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
   }
 
   tags = merge(local.default_tags, var.add_tags)

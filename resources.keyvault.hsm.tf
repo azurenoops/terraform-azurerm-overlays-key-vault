@@ -14,7 +14,7 @@ resource "azurerm_key_vault_managed_hardware_security_module" "keyvault_hsm" {
   sku_name = "Standard_B1"
 
 
-  purge_protection_enabled   = var.purge_protection_enabled
+  purge_protection_enabled   = var.enable_purge_protection
   soft_delete_retention_days = var.soft_delete_retention_days
 
   admin_object_ids = var.admin_objects_ids
