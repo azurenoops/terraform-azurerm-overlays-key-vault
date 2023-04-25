@@ -64,7 +64,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 
 resource "azurerm_private_dns_a_record" "a_rec" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_key_vault.keyvault.0.name
+  name                = lower(azurerm_key_vault.keyvault.0.name)
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
