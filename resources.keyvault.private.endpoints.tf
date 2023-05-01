@@ -58,7 +58,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   resource_group_name   = local.resource_group_name
   private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet.0.id : var.existing_vnet_id
-  registration_enabled  = true
+  registration_enabled  = false
   tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, var.add_tags, )
 }
 
