@@ -5,18 +5,9 @@
 # Private Link for Sql - Default is "false" 
 #---------------------------------------------------------
 data "azurerm_virtual_network" "vnet" {
-  count               = var.enable_private_endpoint && var.existing_vnet_id == null ? 1 : 0
+  count               = var.enable_private_endpoint && var.virtual_network_name == null ? 1 : 0
   name                = var.virtual_network_name
   resource_group_name = local.resource_group_name
-}
-
-resource "azurerm_subnet" "snet_ep" {
-  count                                     = var.enable_private_endpoint && var.existing_subnet_id == null ? 1 : 0
-  name                                      = "snet-endpoint-${local.location}"
-  resource_group_name                       = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet.0.resource_group_name : element(split("/", var.existing_vnet_id), 4)
-  virtual_network_name                      = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet.0.name : element(split("/", var.existing_vnet_id), 8)
-  address_prefixes                          = var.private_subnet_address_prefix
-  private_endpoint_network_policies_enabled = true
 }
 
 resource "azurerm_private_endpoint" "pep" {
@@ -24,7 +15,7 @@ resource "azurerm_private_endpoint" "pep" {
   name                = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0))
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = var.existing_subnet_id == null ? azurerm_subnet.snet_ep.0.id : var.existing_subnet_id
+  subnet_id           = var.existing_subnet_id
   tags                = merge({ "Name" = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0)) }, var.add_tags, )
 
   private_service_connection {
@@ -36,7 +27,7 @@ resource "azurerm_private_endpoint" "pep" {
 }
 
 #------------------------------------------------------------------
-# DNS zone & records for SQL Private endpoints - Default is "false" 
+# DNS zone & records for KV Private endpoints - Default is "false" 
 #------------------------------------------------------------------
 data "azurerm_private_endpoint_connection" "pip" {
   count               = var.enable_private_endpoint ? 1 : 0
