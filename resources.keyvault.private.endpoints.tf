@@ -5,18 +5,25 @@
 # Private Link for Sql - Default is "false" 
 #---------------------------------------------------------
 data "azurerm_virtual_network" "vnet" {
-  count               = var.enable_private_endpoint && var.virtual_network_name == null ? 1 : 0
+  count               = var.enable_private_endpoint && var.virtual_network_name != null ? 1 : 0
   name                = var.virtual_network_name
   resource_group_name = local.resource_group_name
 }
 
+data "azurerm_subnet" "snet" {
+  count                = var.enable_private_endpoint && var.existing_private_subnet_name != null ? 1 : 0
+  name                 = var.existing_private_subnet_name
+  virtual_network_name = azurerm_virtual_network.vnet.0.name
+  resource_group_name  = local.resource_group_name
+}
+
 resource "azurerm_private_endpoint" "pep" {
-  count               = var.enable_private_endpoint ? 1 : 0
-  name                = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0))
+  count               = var.enable_private_endpoint && var.existing_private_subnet_name != null ? 1 : 0
+  name                = format("%s-private-endpoint", local.kv_name)
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = var.existing_subnet_id
-  tags                = merge({ "Name" = format("%s-private-endpoint", element([for n in azurerm_key_vault.keyvault : n.name], 0)) }, var.add_tags, )
+  subnet_id           = azurerm_subnet.snet.0.id
+  tags                = merge({ "Name" = format("%s-private-endpoint", local.kv_name) }, var.add_tags, )
 
   private_service_connection {
     name                           = "keyvault-privatelink"
@@ -48,7 +55,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "vnet-private-zone-link"
   resource_group_name   = local.resource_group_name
   private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
-  virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet.0.id : var.existing_vnet_id
+  virtual_network_id    = data.azurerm_virtual_network.vnet.0.id
   registration_enabled  = false
   tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, var.add_tags, )
 }

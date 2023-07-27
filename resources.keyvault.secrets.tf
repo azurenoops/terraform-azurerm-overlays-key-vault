@@ -2,13 +2,13 @@
 # Licensed under the MIT License.
 
 #-----------------------------------------------------------------------------------
-# Keyvault Secret
+# Keyvault Secret - Default is "false"
 #-----------------------------------------------------------------------------------
-/* resource "azurerm_key_vault_secret" "keys" {
+resource "azurerm_key_vault_secret" "keys" {
   for_each     = var.secrets
   name         = each.key
-  value        = each.value != "" ? each.value : random_password.passwd[each.key].result
-  key_vault_id = azurerm_key_vault.keyvault.id
+  value        = each.value
+  key_vault_id = azurerm_key_vault.keyvault.0.id
 
   lifecycle {
     ignore_changes = [
@@ -16,4 +16,4 @@
       value,
     ]
   }
-} */
+}
