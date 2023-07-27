@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 #-----------------------------------------------------------------------------------
-# Keyvault Secret
+# Keyvault Secret - Default is "false"
 #-----------------------------------------------------------------------------------
 resource "azurerm_key_vault_secret" "keys" {
   for_each     = var.secrets
