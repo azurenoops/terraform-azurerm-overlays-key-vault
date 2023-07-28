@@ -6,11 +6,7 @@ data "azuread_group" "admin_group" {
 }
 
 module "mod_key_vault" {
-  depends_on = [
-    azurerm_resource_group.kv_rg,
-    azurerm_virtual_network.kv_vnet,
-    azurerm_subnet.kv_subnet,
-  ]
+
   #source  = "azurenoops/overlays-key-vault/azurerm"
   #version = "x.x.x"
   source = "../.."
