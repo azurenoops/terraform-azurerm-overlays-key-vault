@@ -19,6 +19,7 @@ More details are available in the [CONTRIBUTING.md](./CONTRIBUTING.md#pull-reque
 ## Resources Used
 
 * [Acess Polices for AD users, groups and SPN](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_access_policy)
+* [Key Vault Keys](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_key)
 * [Secrets](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret)
 * [Certifiate Contacts](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault#contact)
 * [Private Endpoints](https://www.terraform.io/docs/providers/azurerm/r/private_endpoint.html)
