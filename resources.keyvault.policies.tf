@@ -48,6 +48,8 @@ resource "azurerm_key_vault_access_policy" "admin_policy" {
     "Update",
     "Verify",
     "WrapKey",
+    "GetRotationPolicy",
+    "SetRotationPolicy",
   ]
 
   secret_permissions = [

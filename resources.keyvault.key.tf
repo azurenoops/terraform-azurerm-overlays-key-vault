@@ -5,6 +5,7 @@
 # Key Vault configuration Key - Default (required). 
 #------------------------------------------------------------
 resource "azurerm_key_vault_key" "keys" {
+  depends_on = [ azurerm_key_vault_access_policy.admin_policy, azurerm_key_vault_access_policy.readers_policy ]
   for_each        = { for key in var.keys : key.name => key }
   key_vault_id    = azurerm_key_vault.this.0.id
   name            = each.value.name
