@@ -5,7 +5,7 @@
 ## Diagnostic setting for key vault and its components. 
 ##-------------------------------------------------------
 module "mod_diagnostic_settings_key_vault" {
-  count   = var.log_analytics_workspace_id != null ? 1 : 0
+  count   = length(var.logs_destinations_ids) > 0 ? 1 : 0
   source  = "azurenoops/overlays-diagnostic-settings/azurerm"
   version = "1.0.0"
 
@@ -16,5 +16,5 @@ module "mod_diagnostic_settings_key_vault" {
   org_name           = var.org_name
 
   resource_id           = azurerm_key_vault.this.0.id
-  logs_destinations_ids = [var.log_analytics_workspace_id]
+  logs_destinations_ids = var.logs_destinations_ids
 }
