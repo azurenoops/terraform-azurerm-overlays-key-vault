@@ -51,19 +51,33 @@ Gemfile.lock
 # SSH Key
 private_ssh_key
 
-# generated readme by the pr-check job
+# Crash log files
+crash.log
 
-README-generated.md
+# Ignore any .tfvars files that are generated automatically for each Terraform run. Most
+# .tfvars files are managed as part of configuration and so should be included in
+# version control.
+#
+# example.tfvars
 
-**/override.tf
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
 
-.tflint.hcl
-.tflint_example.hcl
+# Include override files you do wish to add to version control using negated pattern
+#
+!examples/**/main.tf
+!examples/**/terraform.tfvars
 
-tfmod-scaffold/
-scripts
-
+# Exclude tests files you do wish to add to version control using negated pattern
+#
+tests/**
+tests/**/terraform.tfvars
 test/go.sum
 
-TestRecord/
-**/TestRecord.md.tmp
+# Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+# example: *tfplan*
+
