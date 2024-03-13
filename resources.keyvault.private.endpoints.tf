@@ -36,7 +36,7 @@ resource "azurerm_private_endpoint" "pep" {
 #------------------------------------------------------------------
 # DNS zone & records for KV Private endpoints - Default is "false" 
 #------------------------------------------------------------------
-data "azurerm_private_endpoint_connection" "pip" {
+data "azurerm_private_endpoint_connection" "pepc" {
   count               = var.enable_private_endpoint ? 1 : 0
   name                = azurerm_private_endpoint.pep.0.name
   resource_group_name = local.resource_group_name
@@ -66,7 +66,7 @@ resource "azurerm_private_dns_a_record" "a_rec" {
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
-  records             = [data.azurerm_private_endpoint_connection.pip.0.private_service_connection.0.private_ip_address]
+  records             = [data.azurerm_private_endpoint_connection.pepc.0.private_service_connection.0.private_ip_address]
 }
 
 #----------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-1" {
   resource_group_name   = local.valid_rg_name
   private_dns_zone_name = local.private_dns_zone_name
   virtual_network_id    = var.hub_virtual_network_name
-  tags                  = module.labels.tags
+  tags                  = local.default_tags
 }
 
 ##----------------------------------------------------------------------------- 
@@ -97,11 +97,11 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-diff-subs" {
   provider = azurerm.hub
   count    = var.hub_subscription_vnet_link && var.existing_private_dns_zone != null ? 1 : 0
 
-  name                  = format("%s-pdz-vnet-link-kv-1", module.labels.id)
+  name                  = format("%s-pdz-vnet-link-kv-1", var.org_name)
   resource_group_name   = var.existing_private_dns_zone_resource_group_name
   private_dns_zone_name = var.existing_private_dns_zone
   virtual_network_id    = var.hub_virtual_network_name
-  tags                  = module.labels.tags
+  tags                  = local.default_tags
 }
 
 ##----------------------------------------------------------------------------- 
@@ -112,12 +112,12 @@ resource "azurerm_private_dns_a_record" "arecord-1" {
   count = var.enable_private_endpoint && var.connect_to_dns_in_hub_subscription == true ? 1 : 0
 
   provider            = azurerm.hub
-  name                = azurerm_key_vault.key_vault[0].name
+  name                = azurerm_key_vault.this.0.name
   zone_name           = local.private_dns_zone_name
   resource_group_name = local.valid_rg_name
   ttl                 = 3600
-  records             = [data.azurerm_private_endpoint_connection.private-ip[0].private_service_connection[0].private_ip_address]
-  tags                = module.labels.tags
+  records             = [data.azurerm_private_endpoint_connection.pepc.0.private_service_connection.0.private_ip_address]
+  tags                = local.default_tags
   lifecycle {
     ignore_changes = [
       tags,
