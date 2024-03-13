@@ -89,22 +89,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-1" {
 }
 
 ##----------------------------------------------------------------------------- 
-## Below resource will create vnet link in existing private dns zone. 
-## Vnet link will be created when existing private dns zone is in different subscription. 
-## This resource is deployed when more than 1 vnet link is required and module can be called again to do so without deploying other key vault resources. 
-##-----------------------------------------------------------------------------
-resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-diff-subs" {
-  provider = azurerm.hub
-  count    = var.hub_subscription_vnet_link && var.existing_private_dns_zone != null ? 1 : 0
-
-  name                  = format("%s-pdz-vnet-link-kv-1", var.org_name)
-  resource_group_name   = var.existing_private_dns_zone_resource_group_name
-  private_dns_zone_name = var.existing_private_dns_zone
-  virtual_network_id    = var.hub_virtual_network_name
-  tags                  = local.default_tags
-}
-
-##----------------------------------------------------------------------------- 
 ## Below resource will create dns A record for private ip of private endpoint in private dns zone. 
 ## This resource will be created when private dns is in different subscription. 
 ##-----------------------------------------------------------------------------
