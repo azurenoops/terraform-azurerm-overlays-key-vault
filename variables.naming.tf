@@ -21,10 +21,22 @@ variable "use_naming" {
 }
 
 # Custom naming override
-variable "custom_name" {
+variable "custom_kv_name" {
   description = "Name of the Key Vault, generated if not set."
   type        = string
-  default     = ""
+  default     = null
+}
+
+variable "custom_hsm_name" {
+  description = "Name of the Key Vault HSM, generated if not set."
+  type        = string
+  default     = null
+}
+
+variable "custom_private_dns_a_record_name" {
+  description = "Name of the Key Vault Private DNS A Record, generated if not set."
+  type        = string
+  default     = null
 }
 
 variable "custom_resource_group_name" {
