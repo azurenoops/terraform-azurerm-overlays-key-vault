@@ -5,8 +5,8 @@
 # Private Link for Sql - Default is "false" 
 #---------------------------------------------------------
 data "azurerm_virtual_network" "vnet" {
-  count               = var.enable_private_endpoint && var.virtual_network_name != null ? 1 : 0
-  name                = var.virtual_network_name
+  count               = var.enable_private_endpoint && var.existing_virtual_network_name != null ? 1 : 0
+  name                = var.existing_virtual_network_name
   resource_group_name = local.resource_group_name
 }
 
@@ -28,7 +28,7 @@ resource "azurerm_private_endpoint" "pep" {
   private_service_connection {
     name                           = "keyvault-privatelink"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_key_vault.keyvault.0.id
+    private_connection_resource_id = azurerm_key_vault.this.0.id
     subresource_names              = ["vault"]
   }
 }
@@ -40,7 +40,7 @@ data "azurerm_private_endpoint_connection" "pip" {
   count               = var.enable_private_endpoint ? 1 : 0
   name                = azurerm_private_endpoint.pep.0.name
   resource_group_name = local.resource_group_name
-  depends_on          = [azurerm_key_vault.keyvault]
+  depends_on          = [azurerm_key_vault.this]
 }
 
 resource "azurerm_private_dns_zone" "dns_zone" {
@@ -62,9 +62,65 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 
 resource "azurerm_private_dns_a_record" "a_rec" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = lower(azurerm_key_vault.keyvault.0.name)
+  name                = local.private_dns_a_record_name
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
   records             = [data.azurerm_private_endpoint_connection.pip.0.private_service_connection.0.private_ip_address]
+}
+
+#----------------------------------------------------------------------------------------------
+# DNS zone & records for KV Private endpoints - Different DNS Zone in different subscription
+#----------------------------------------------------------------------------------------------
+
+##----------------------------------------------------------------------------- 
+## Below resource will create vnet link in existing private dns zone. 
+## Vnet link will be created when existing private dns zone is in different subscription. 
+##-----------------------------------------------------------------------------
+resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-1" {
+  provider = azurerm.hub
+  count    = var.enable_private_endpoint && var.connect_to_dns_in_hub_subscription == true ? 1 : 0
+
+  name                  = var.existing_private_dns_zone == null ? format("%s-pdz-vnet-link-kv", var.org_name) : format("%s-pdz-vnet-link-kv-1", var.org_name)
+  resource_group_name   = local.valid_rg_name
+  private_dns_zone_name = local.private_dns_zone_name
+  virtual_network_id    = var.hub_virtual_network_name
+  tags                  = module.labels.tags
+}
+
+##----------------------------------------------------------------------------- 
+## Below resource will create vnet link in existing private dns zone. 
+## Vnet link will be created when existing private dns zone is in different subscription. 
+## This resource is deployed when more than 1 vnet link is required and module can be called again to do so without deploying other key vault resources. 
+##-----------------------------------------------------------------------------
+resource "azurerm_private_dns_zone_virtual_network_link" "vent-link-diff-subs" {
+  provider = azurerm.hub
+  count    = var.hub_subscription_vnet_link && var.existing_private_dns_zone != null ? 1 : 0
+
+  name                  = format("%s-pdz-vnet-link-kv-1", module.labels.id)
+  resource_group_name   = var.existing_private_dns_zone_resource_group_name
+  private_dns_zone_name = var.existing_private_dns_zone
+  virtual_network_id    = var.hub_virtual_network_name
+  tags                  = module.labels.tags
+}
+
+##----------------------------------------------------------------------------- 
+## Below resource will create dns A record for private ip of private endpoint in private dns zone. 
+## This resource will be created when private dns is in different subscription. 
+##-----------------------------------------------------------------------------
+resource "azurerm_private_dns_a_record" "arecord-1" {
+  count = var.enable_private_endpoint && var.connect_to_dns_in_hub_subscription == true ? 1 : 0
+
+  provider            = azurerm.hub
+  name                = azurerm_key_vault.key_vault[0].name
+  zone_name           = local.private_dns_zone_name
+  resource_group_name = local.valid_rg_name
+  ttl                 = 3600
+  records             = [data.azurerm_private_endpoint_connection.private-ip[0].private_service_connection[0].private_ip_address]
+  tags                = module.labels.tags
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
