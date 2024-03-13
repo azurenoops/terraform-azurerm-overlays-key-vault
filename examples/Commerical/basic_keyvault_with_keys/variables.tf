@@ -19,7 +19,7 @@ variable "environment" {
 variable "workload_name" {
   description = "Name of the workload_name"
   type        = string
-  default     = "example"
+  default     = "example2"
 }
 
 variable "org_name" {

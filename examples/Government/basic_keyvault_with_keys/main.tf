@@ -37,7 +37,7 @@ module "mod_key_vault" {
   # soft_delete_retention_days = 90
 
   # Key Vault Keys 
-  keys = [{ name = "key-1", key_type = "RSA", key_size = "2048", key_opts = "decrypt,encrypt,sign,unwrapKey,verify,wrapKey" }]
+  keys = [{ name = "key-1", key_type = "RSA", key_size = "2048", key_opts = ["decrypt","encrypt","sign","unwrapKey","verify","wrapKey"] }]
 
   # Current user should be here to be able to create keys and secrets
   admin_objects_ids = [

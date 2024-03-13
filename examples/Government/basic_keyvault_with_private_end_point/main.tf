@@ -18,6 +18,7 @@ data "azuread_group" "admin_group" {
 module "mod_key_vault" {
   depends_on = [
     azurerm_resource_group.kv_rg,
+    azurerm_log_analytics_workspace.law,
     azurerm_virtual_network.kv_vnet,
     azurerm_subnet.kv_subnet,
   ]
@@ -65,6 +66,9 @@ module "mod_key_vault" {
   admin_objects_ids = [
     data.azuread_group.admin_group.id
   ]
+
+  # Setup Diagnostic Settings for Key Vault
+  logs_destinations_ids = [azurerm_log_analytics_workspace.law.id]
 
   # This is to enable resource locks for the key vault. 
   enable_resource_locks = false
