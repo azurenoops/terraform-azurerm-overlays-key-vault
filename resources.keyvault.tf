@@ -4,7 +4,7 @@
 #------------------------------------------------------------
 # Key Vault configuration - Default (required). 
 #------------------------------------------------------------
-resource "azurerm_key_vault" "keyvault" {
+resource "azurerm_key_vault" "this" {
   count = var.managed_hardware_security_module_enabled ? 0 : 1
 
   name = local.kv_name
@@ -58,6 +58,6 @@ resource "azurerm_key_vault" "keyvault" {
 }
 
 moved {
-  from = azurerm_key_vault.keyvault
-  to   = azurerm_key_vault.keyvault[0]
+  from = azurerm_key_vault.this
+  to   = azurerm_key_vault.this[0]
 }

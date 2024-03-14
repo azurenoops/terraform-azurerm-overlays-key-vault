@@ -14,3 +14,13 @@ terraform {
     }
   }
 }
+
+##----------------------------------------------------------------------------- 
+## Provider block
+## To be used only when there is existing private dns zone in different subscription. Mention other subscription id in 'var.alias_subscription_id'. 
+##-----------------------------------------------------------------------------
+provider "azurerm" {
+  alias = "hub"
+  features {}
+  subscription_id = var.alias_subscription_id
+}

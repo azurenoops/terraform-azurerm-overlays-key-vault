@@ -20,3 +20,13 @@ data "azurenoopsutils_resource_name" "keyvault_hsm" {
   clean_input   = true
   separator     = "-"
 }
+
+data "azurenoopsutils_resource_name" "keyvault_dns_a_record" {
+  name          = var.workload_name
+  resource_type = "azurerm_private_dns_a_record"
+  prefixes      = [var.org_name, module.mod_azure_region_lookup.location_short]
+  suffixes      = compact([var.name_prefix == "" ? null : local.name_prefix, var.deploy_environment, local.name_suffix, var.use_naming ? "" : "pdnsrec"])
+  use_slug      = var.use_naming
+  clean_input   = true
+  separator     = "-"
+}

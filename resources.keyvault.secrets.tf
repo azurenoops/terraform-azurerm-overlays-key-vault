@@ -4,16 +4,12 @@
 #-----------------------------------------------------------------------------------
 # Keyvault Secret - Default is "false"
 #-----------------------------------------------------------------------------------
-resource "azurerm_key_vault_secret" "keys" {
-  for_each     = var.secrets
-  name         = each.key
-  value        = each.value
-  key_vault_id = azurerm_key_vault.keyvault.0.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-      value,
-    ]
-  }
+resource "azurerm_key_vault_secret" "secrets" {
+  for_each        = { for secret in var.secrets : secret.name => secret }
+  key_vault_id    = azurerm_key_vault.this.0.id
+  name            = each.value.name
+  value           = each.value.value
+  content_type    = each.value.content_type
+  not_before_date = each.value.not_before_date
+  expiration_date = each.value.expiration_date
 }
